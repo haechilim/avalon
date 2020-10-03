@@ -9,6 +9,84 @@ body {
     background-repeat: no-repeat;
     background-position: 0% 0%;
     cursor: default;
+    margin: 0px;
+}
+
+.container {
+    height: 1024px;
+}
+
+.playerContainer {
+    display: flex;
+	flex-direction: column;
+	justify-content: center;
+	align-items: center;
+	position: absolute;
+    z-index: 1;
+}
+
+.player {
+    display: flex;
+	flex-direction: column;
+	justify-content: center;
+	align-items: center;
+    position: absolute;
+    color: #ffffff;
+    width: 200px;
+    height: 25px;
+    border: 2px solid #E0EBFF;
+    border-radius: 10% / 50%;
+    background-color: #403418;
+}
+
+.seat0 {
+	left: 1100px;
+	top: 200px;
+}
+
+.seat1 {
+	left: 1450px;
+	top: 250px;
+}
+
+.seat2 {
+	left: 1700px;
+	top: 500px;
+}
+
+.seat3 {
+	left: 1450px;
+	top: 850px;
+}
+
+.seat4 {
+    left: 1100px;
+	top: 950px;
+}
+
+.seat5 {
+	left: 700px;
+	top: 950px;
+}
+
+.seat6 {
+	left: 350px;
+	top: 850px;
+}
+
+.seat7 {
+	left: 100px;
+	top: 500px;
+}
+
+.seat8 {
+	left: 350px;
+	top: 250px;
+}
+
+.seat9 {
+	left: 700px;
+	top: 200px;
 }
 
 .board {
@@ -78,6 +156,7 @@ body {
     flex-direction: row;
     font-size: 50px;
     margin-left: 150px;
+    opacity: 0.8;
 }
 
 .goodCount {
