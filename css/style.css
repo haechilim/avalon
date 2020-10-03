@@ -1,0 +1,118 @@
+@font-face { 
+    font-family: 'HeirofLightBold'; 
+    src: url('https://cdn.jsdelivr.net/gh/projectnoonnu/noonfonts_20-07@1.0/HeirofLightBold.woff') format('woff'); font-weight: normal; font-style: normal; 
+}
+
+body {
+    font-family: 'HeirofLightBold';
+    background-image: url("../image/9pSheet.jpg");
+    background-repeat: no-repeat;
+    background-position: 0% 0%;
+    cursor: default;
+}
+
+.board {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    height: 1024px;
+}
+
+.expeditionResultContainer {
+    display: flex;
+    flex-direction: row;
+}
+
+.expeditionResult {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    width: 180px;
+    height: 180px;
+    font-size: 80px;
+    color: #ffffff;
+    border: 1px solid #8FBC8F;
+    border-radius: 50%;
+    margin: 0px 10px;
+}   
+
+.quest4 {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+}
+
+.twoFailText {
+    font-size: 12px;
+}
+
+.rejectCountContainer {
+    display: flex;
+    flex-direction: row;
+    justify-content: center;
+    align-items: center;
+    margin-top: 100px;
+}
+
+.rejectCount {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    width: 80px;
+    height: 80px;
+    font-size: 30px;
+    color: #ffffff;
+    border: 1px solid #8FBC8F;
+    border-radius: 50%;
+    margin: 0px 5px;
+}
+
+.rejectCount5 {
+    background-color: #FF0000;
+    opacity: 0.5;
+}
+
+.playerNumberContainer {
+    display: flex;
+    flex-direction: row;
+    font-size: 50px;
+    margin-left: 150px;
+}
+
+.goodCount {
+    color: #00ff00;
+}
+
+.vsText {
+    color: #ffffff;
+    margin: 0px 20px;
+}
+
+.evilCount {
+    color: #FF0000;
+}
+
+.drop-shadow {
+	-webkit-filter: drop-shadow(5px 5px 10px rgba(0,0,0,.5));
+	-moz-filter: drop-shadow(5px 5px 10px rgba(0,0,0,.5));
+	-ms-filter: drop-shadow(5px 5px 10px rgba(0,0,0,.5));
+	-o-filter: drop-shadow(5px 5px 10px rgba(0,0,0,.5));
+	filter: drop-shadow(5px 5px 10px rgba(0,0,0,.5));
+}
+
+.drop-shadow-light {
+	-webkit-filter: drop-shadow(1px 1px 1px #000);
+	-moz-filter: drop-shadow(1px 1px 1px #000);
+	-ms-filter: drop-shadow(1px 1px 1px #000);
+	-o-filter: drop-shadow(1px 1px 1px #000);
+	filter: drop-shadow(1px 1px 1px #000);
+}
+
+.drop-shadow-strong {
+	-webkit-filter: drop-shadow(20px 20px 10px rgba(0,0,0,0.5));
+	-moz-filter: drop-shadow(20px 20px 10px rgba(0,0,0,0.5));
+	-ms-filter: drop-shadow(20px 20px 10px rgba(0,0,0,0.5));
+	-o-filter: drop-shadow(20px 20px 10px rgba(0,0,0,0.5));
+	filter: drop-shadow(20px 20px 10px rgba(0,0,0,0.5));
+}
