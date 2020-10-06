@@ -150,6 +150,9 @@ body {
 .expeditionResultContainer {
     display: flex;
     flex-direction: row;
+    position: absolute;
+    left: 455px;
+	top: 325px;
 }
 
 .expeditionResult {
@@ -197,7 +200,9 @@ body {
     flex-direction: row;
     justify-content: center;
     align-items: center;
-    margin-top: 100px;
+    position: absolute;
+    left: 570px;
+	top: 625px;
 }
 
 .rejectCount {
