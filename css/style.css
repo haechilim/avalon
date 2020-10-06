@@ -5,7 +5,7 @@
 
 body {
     font-family: 'HeirofLightBold';
-    background-image: url("../image/9pSheet.jpg");
+    background-image: url("../image/10pSheet.jpg");
     background-repeat: no-repeat;
     background-position: 0% 0%;
     cursor: default;
@@ -31,62 +31,112 @@ body {
 	justify-content: center;
 	align-items: center;
     position: absolute;
-    color: #ffffff;
+}
+
+.identity {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    overflow: hidden;
+    width: 100px;
+    height: 100px;
+    border: 2px solid #E0EBFF;
+    border-radius: 50%;
+    background-color: #828282;
+    opacity: 0.5;
+    margin: 10px;
+}
+
+.opacity {
+    opacity: initial;
+}
+
+.identity .identityMark {
+    width: auto; height: auto;
+    max-width: 110px;
+    max-height: 110px;
+}
+
+.identity .questionMark {
+    width: auto; height: auto;
+    max-width: 100px;
+    max-height: 100px;
+}
+
+.votedMark {
+    width: auto; height: auto;
+    max-width: 200px;
+    max-height: 200px;
+}
+
+.nickname {
     width: 200px;
     height: 25px;
     border: 2px solid #E0EBFF;
     border-radius: 10% / 50%;
     background-color: #403418;
+    text-align: center;
+    color: #ffffff;
+}
+
+.goodPlayer {
+    border-color: #00ff00;
+    color: #00ff00;
+}
+
+.evilPlayer {
+    border-color: #FF0000;
+    color: #FF0000;
 }
 
 .seat0 {
 	left: 1100px;
-	top: 200px;
+	top: 100px;
 }
 
 .seat1 {
 	left: 1450px;
-	top: 250px;
+	top: 150px;
 }
 
 .seat2 {
 	left: 1700px;
-	top: 500px;
+	top: 400px;
 }
 
 .seat3 {
 	left: 1450px;
-	top: 850px;
+	top: 750px;
 }
 
 .seat4 {
     left: 1100px;
-	top: 950px;
+	top: 850px;
 }
 
 .seat5 {
 	left: 700px;
-	top: 950px;
+	top: 850px;
 }
 
 .seat6 {
 	left: 350px;
-	top: 850px;
+	top: 750px;
 }
 
 .seat7 {
 	left: 100px;
-	top: 500px;
+	top: 400px;
 }
 
 .seat8 {
 	left: 350px;
-	top: 250px;
+	top: 150px;
 }
 
 .seat9 {
 	left: 700px;
-	top: 200px;
+	top: 100px;
 }
 
 .board {
@@ -106,6 +156,7 @@ body {
     display: flex;
     justify-content: center;
     align-items: center;
+    overflow: hidden;
     width: 180px;
     height: 180px;
     font-size: 80px;
@@ -115,6 +166,12 @@ body {
     margin: 0px 10px;
 }   
 
+.expeditionResult .identityMark {
+    width: auto; height: auto;
+    max-width: 200px;
+    max-height: 200px;
+}
+
 .quest4 {
     display: flex;
     flex-direction: column;
@@ -123,6 +180,16 @@ body {
 
 .twoFailText {
     font-size: 12px;
+}
+
+.expeditionSuccess {
+    border-color: #00ff00;
+    color: #00ff00;
+}
+
+.expeditionFail {
+    border-color: #FF0000;
+    color: #FF0000;
 }
 
 .rejectCountContainer {
@@ -137,6 +204,7 @@ body {
     display: flex;
     justify-content: center;
     align-items: center;
+    overflow: hidden;
     width: 80px;
     height: 80px;
     font-size: 30px;
@@ -149,6 +217,11 @@ body {
 .rejectCount5 {
     background-color: #FF0000;
     opacity: 0.5;
+}
+
+.rejectCountPosition {
+    border-color: #7B68EE;
+    color: #7B68EE;
 }
 
 .playerNumberContainer {
