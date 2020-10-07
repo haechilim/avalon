@@ -19,6 +19,8 @@ var GS_WINNER = 6;	// 게임 종료, 승자팀 발표 단계
 
 var MAX_PLAYER = 10;
 var MIN_PLAYER = 5;
+var MAX_ROUND = 5;
+var MAX_VOTE = 5;
 
 // 정체(identity)
 var GOOD_NORMAL = 0;	// 일반 시민(선)
@@ -44,6 +46,13 @@ var EVIL = 1;
 
 var gamedata;
 
+// -------------------- init 함수 -------------------------
+
+function init() {
+    showSeatAll(false);
+    expeditionNomalAll();
+    showRejectCountMarkAll(false);
+}
 
 // -------------------- 화면 변환 함수 -------------------------
 
@@ -53,14 +62,48 @@ function showSeatAll(visible) {
     }
 }
 
+function expeditionNomalAll() {
+    for(var i = 1; i <= MAX_ROUND; i++) {
+        expeditionNomal(i);
+    }
+}
+
+function showRejectCountMarkAll(visible) {
+    for(var i = 1; i <= MAX_VOTE; i++) {
+        showRejectCountMark(i, visible);
+    }
+}
+
 function showSeat(seat, visible) {
     document.querySelector(".seat" + seat).style.display = visible ? "flex" : "none";
+}
+
+function expeditionNomal(round) {
+    document.querySelector(".quest" + round).classList.remove("expeditionSuccess");
+    document.querySelector(".quest" + round).classList.remove("expeditionFail");
+}
+
+function expeditionSuccess(round) {
+    document.querySelector(".quest" + round).classList.add("expeditionSuccess");
+    document.querySelector(".quest" + round).classList.remove("expeditionFail");
+}
+
+function expeditionFail(round) {
+    document.querySelector(".quest" + round).classList.remove("expeditionSuccess");
+    document.querySelector(".quest" + round).classList.add("expeditionFail");
+}
+
+function showRejectCountMark(count, visible) {
+    var element = document.querySelector(".rejectCount" + count);
+
+    if(visible) element.classList.add("rejectCountMark");
+    else element.classList.remove("rejectCountMark");
 }
 
 // -------------------- 이벤트 바인딩 -------------------------
 
 document.addEventListener("DOMContentLoaded", function() {
-    showSeatAll(false);
+    init();
 	bindEvents();
 });
 
