@@ -5,15 +5,23 @@
 
 body {
     font-family: 'HeirofLightBold';
-    background-image: url("../image/10pSheet.jpg");
-    background-repeat: no-repeat;
-    background-position: 0% 0%;
-    cursor: default;
     margin: 0px;
+	overflow: hidden;
+	transform-origin: left center;
 }
 
 .container {
-    height: 1024px;
+    display: flex;
+	flex-direction: column;
+    justify-content: flex-end;
+    background-image: url('../image/5pSheet.jpg');
+	width: 1919px;
+	height: 1057px;
+	background-repeat: no-repeat;
+	background-size: 100%;
+    background-position: 0% 0%;
+    margin: 0px;
+	position: relative;
 }
 
 .playerContainer {

@@ -48,10 +48,53 @@ var gamedata;
 
 // -------------------- init 함수 -------------------------
 
+
+
+// -------------------- init 함수 -------------------------
+
 function init() {
+    resize();
+    initBoard();
+    requestJoin(function(json) {
+		requestGameData();
+		setInterval(requestGameData, DATA_REQUEST_INTERVAL);
+	});
+}
+
+function initBoard() {
     showSeatAll(false);
     expeditionNomalAll();
     showRejectCountMarkAll(false);
+    writePlayerNumber(0, 0);
+}
+
+// -------------------- request -------------------------
+
+function requestGameData(callback) {
+	request("/gamedata?seat=" + mySeat, function(gamedata) {
+		if(sequece >= gamedata.sequece) return;
+		sequece = gamedata.sequece;
+		gamedata = gamedata;
+		updateTable();
+
+		if(callback) callback();
+	});
+}
+
+function requestJoin(callback) {
+	request("/join" + location.search, callback);
+}
+
+function request(url, callback) {
+	var xhr = new XMLHttpRequest();
+		
+	xhr.addEventListener("load", function() {
+		var json = JSON.parse(xhr.responseText);
+		if(callback) callback(json);
+	});
+	
+	xhr.open("GET", url, true);
+	xhr.send();
 }
 
 // -------------------- 화면 변환 함수 -------------------------
@@ -72,6 +115,11 @@ function showRejectCountMarkAll(visible) {
     for(var i = 1; i <= MAX_VOTE; i++) {
         showRejectCountMark(i, visible);
     }
+}
+
+function writePlayerNumber(good, evil) {
+    document.querySelector(".goodCount").innerHTML = good;
+    document.querySelector(".evilCount").innerHTML = evil;
 }
 
 function showSeat(seat, visible) {
@@ -104,10 +152,15 @@ function showRejectCountMark(count, visible) {
 
 document.addEventListener("DOMContentLoaded", function() {
     init();
+    resize();
 	bindEvents();
 });
 
 function bindEvents() {
+    window.addEventListener('resize', function() {
+        resize();
+    });
+
     document.addEventListener("contextmenu", function(event) {
         event.preventDefault();
     });
@@ -119,4 +172,18 @@ function bindEvents() {
     document.addEventListener("dragstart", function(event) {
         event.preventDefault();
     });
+}
+
+function resize() {
+	var DEFAULT_WIDTH = 1919;
+	var DEFAULT_HEIGHT = 1057;
+	
+	var ratioX = window.innerWidth / DEFAULT_WIDTH;
+	var ratioY = window.innerHeight / DEFAULT_HEIGHT;
+	var offsetX = (DEFAULT_WIDTH - window.innerWidth) / 2;
+	var offsetY = (DEFAULT_HEIGHT - window.innerHeight) / 2;
+	
+	document.body.style.transform = "scale(" + Math.min(ratioX, ratioY) + ")";
+	document.getElementById("container").style.transform = "translate(0px, " + (ratioY > 1 ? -offsetY : 0) + "px)";
+	window.scrollTo(0, offsetY);
 }

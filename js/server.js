@@ -10,7 +10,8 @@ var RC_NO_PERMISSION = 2;
 // 참가요청에 대한 응답코드
 var JOIN_SUCCESS = 0;
 var JOIN_NO_NAME = 1;
-var JOIN_ALREADY_EXISTS = 2;
+var JOIN_NO_SEAT = 2;
+var JOIN_ALREADY_EXISTS = 3;
 
 // 게임 상태(Game Status)
 var GS_WAITING = 0;	// 게임 시작전
@@ -59,6 +60,63 @@ var gamedata = {
 	sequence: 1	// 데이터를 주기적으로 뿌리는데 데이터가 변경되어 클라이언트 쪽에 이를 알릴때 사용되는 변수 값만 증가시켜주면 된다...
 };
 
+// ------------------- 게임 진행 주 로직 --------------------------
+
+function join(name, seat) {
+	var code = JOIN_SUCCESS;
+	var id = -1;
+	
+	if(!name) code = JOIN_NO_NAME;
+	else if(!seat) code = JOIN_NO_SEAT;
+	else {
+		var player = getPlayerBySeat(seat);
+		
+		if(player) code = JOIN_ALREADY_EXISTS;
+		else {
+			player = newPlayer(name, seat);
+			setOwner();
+			gamedata.sequence++;
+		}
+		
+		id = player.id;
+	}
+	
+	return {
+		code: code,
+		id: id
+	};
+
+	function newPlayer(name, seat) {
+		player = {
+			name: name,
+			seat: seat,
+			identity: -1,
+			vote: -1,
+			expedition: -1
+		};
+
+		gamedata.players.push(player);
+	}
+
+	function setOwner() {
+		if(gamedata.players.length <= 0) return;
+		
+		gamedata.players[0].owner = true;
+	}
+}
+
+// ------------------- 편의 함수 --------------------------
+
+function getPlayerBySeat(seat) {
+	for(var i = 0; i < gamedata.players.length; i++) {
+		var player = gamedata.players[i];
+
+		if(player.seat == seat) return player;
+	}
+
+	return null;
+}
+
 // ------------------- 전송 요청 처리 --------------------------
 
 var server = http.createServer(function(request, response) {
@@ -72,6 +130,10 @@ var server = http.createServer(function(request, response) {
 	switch(urlPath) {
 		case "/data":
 			jsonResponse(response, gamedata);
+			return;
+
+		case "/join":
+			jsonResponse(response, join(parameter.name, parameter.seat));
 			return;
 	}
 		
@@ -141,7 +203,7 @@ function parameterPart() {
 }
 
 function getFilePath(urlPath) {
-	if(urlPath == "/") return "poker.html";
+	if(urlPath == "/") return "avalon.html";
 	
 	return urlPath.substr(1, urlPath.length - 1);
 }
