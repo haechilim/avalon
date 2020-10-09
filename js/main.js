@@ -57,12 +57,14 @@ var EVIL = 1;
 var DATA_REQUEST_INTERVAL = 1000;
 
 var gamedata;
-var sequece = 0;
+var sequence = 0;
 var mySeat;
 
 // -------------------- update 함수 -------------------------
 
 function updateTable() {
+    redraw();
+    showSeatAll(false);
     updatePlayer();
 }
 
@@ -83,23 +85,23 @@ function init() {
 		if(json.code == JOIN_NO_NAME || json.code == JOIN_NO_SEAT) return;
 		requestGameData();
 		setInterval(requestGameData, DATA_REQUEST_INTERVAL);
-	});
+    });
+    
+    function initBoard() {
+        redraw();
+        expeditionNomalAll();
+        showRejectCountMarkAll(false);
+    }
 }
 
-function initBoard() {
-    showSeatAll(false);
-    expeditionNomalAll();
-    showRejectCountMarkAll(false);
-    writePlayerNumber(0, 0);
-}
-
-// -------------------- request -------------------------
+// -------------------- request 함수 -------------------------
 
 function requestGameData(callback) {
 	request("/gamedata?seat=" + mySeat, function(data) {
-		if(sequece >= data.sequece) return;
-		sequece = data.sequece;
-		gamedata = data;
+		if(sequence >= data.sequence) return;
+		sequence = data.sequence;
+        gamedata = data;
+        console.log(gamedata, sequence);
 		updateTable();
 
 		if(callback) callback();
@@ -142,11 +144,6 @@ function showRejectCountMarkAll(visible) {
     }
 }
 
-function writePlayerNumber(good, evil) {
-    document.querySelector(".goodCount").innerHTML = good;
-    document.querySelector(".evilCount").innerHTML = evil;
-}
-
 function showSeat(seat, visible) {
     if(seat < 0 || seat >= MAX_PLAYER) return;
     
@@ -178,7 +175,7 @@ function showRejectCountMark(count, visible) {
 // -------------------- 이벤트 바인딩 -------------------------
 
 document.addEventListener("DOMContentLoaded", function() {
-    redrawPlayers();
+    redraw();
     init();
     resize();
 	bindEvents();
@@ -220,6 +217,11 @@ function resize() {
 
 // -------------------- redraw 함수 -------------------------
 
+function redraw() {
+    redrawPlayers();
+    redrawBoard();
+}
+
 function redrawPlayers() {
     var html = '';
     var profile;
@@ -249,4 +251,97 @@ function redrawPlayers() {
     }
 
     document.querySelector(".playerContainer").innerHTML = html;
+}
+
+function redrawBoard() {
+    var quests = [ 2, 3, 4, 3, 4 ];
+    var goodCount = 0;
+    var evilCount = 0;
+    var isTowFailsRequired = false;
+    
+    if(gamedata) {
+        var playerCount = gamedata.players.length;
+
+        setBackgroundImage(playerCount);
+
+        switch(playerCount) {
+            case 5:
+                quests = [ 2, 3, 2, 3, 3 ];
+                goodCount = 3;
+                evilCount = 2;
+                break;
+
+            case 6:
+                quests = [ 2, 3, 4, 3, 4 ];
+                goodCount = 4;
+                evilCount = 2;
+                break;
+
+            case 7:
+                quests = [ 2, 3, 3, 4, 4 ];
+                isTowFailsRequired = true;
+                goodCount = 4;
+                evilCount = 3;
+                break;
+
+            case 8:
+                quests = [ 3, 4, 4, 5, 5 ];
+                isTowFailsRequired = true;
+                goodCount = 5;
+                evilCount = 3;
+                break;
+
+            case 9:
+                quests = [ 3, 4, 4, 5, 5 ];
+                isTowFailsRequired = true;
+                goodCount = 6;
+                evilCount = 3;
+                break;
+
+            case 10:
+                quests = [ 3, 4, 4, 5, 5 ];
+                isTowFailsRequired = true;
+                goodCount = 6;
+                evilCount = 4;
+                break;
+        }
+    }
+    
+    var html = 
+    '<div class="expeditionResultContainer">' +
+        '<div class="expeditionResult quest1 drop-shadow-light">' + quests[0] + '</div>' +
+        '<div class="expeditionResult quest2 drop-shadow-light">' + quests[1] + '</div>' +
+        '<div class="expeditionResult quest3 drop-shadow-light">' + quests[2] + '</div>' +
+        '<div class="expeditionResult quest4 drop-shadow-light">' +
+            '<div>' + quests[3] + '</div>' +
+            '<div class="twoFailText">' + TowFailsRequired() + '</div>' +
+        '</div>' +
+        '<div class="expeditionResult quest5 drop-shadow-light">' + quests[4] + '</div>' +
+    '</div>' +
+
+    '<div class="rejectCountContainer">' +
+        '<div class="rejectCount rejectCount1 drop-shadow-light">1</div>' +
+        '<div class="rejectCount rejectCount2 drop-shadow-light">2</div>' +
+        '<div class="rejectCount rejectCount3 drop-shadow-light">3</div>' +
+        '<div class="rejectCount rejectCount4 drop-shadow-light">4</div>' +
+        '<div class="rejectCount rejectCount5 drop-shadow-light">5</div>' +
+        
+        '<div class="playerNumberContainer">' +
+            '<div class="goodCount drop-shadow-light">' + goodCount + '</div>' +
+            '<div class="vsText drop-shadow-light">VS</div>' +
+            '<div class="evilCount drop-shadow-light">' + evilCount + '</div>' +
+        '</div>' +
+    '</div>';
+
+    document.querySelector(".board").innerHTML = html;
+
+    function TowFailsRequired() {
+        return isTowFailsRequired ? 'Two fails required' : '';
+    }
+
+    function setBackgroundImage(playerCount) {
+        if(playerCount <= 5) playerCount = 5;
+
+        document.querySelector(".container").style.backgroundImage = "url('image/" + playerCount + "pSheet.jpg')";
+    }
 }

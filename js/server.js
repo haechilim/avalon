@@ -60,7 +60,7 @@ var gamedata = {
 	leader: -1,	// 시작은 방장이고 한 원정이 끝나거나 투표가 반대되면 1 증가시킴 현재 플래이어수를 넘기면 다시 0으로 돌아옴
 	leftBadge: -1,	// 남아 있는 배지로 [현재 라운드에 원정대수 - 현재 리더가 부여해준 배지 개수] 이다
 	voteResult: -1,	// 투표 완료후에 원정이 찬성인지 반대인지 최종으로 알려줌
-	expeditionResult: [],	// 원정 결과로 크기 5의 배열 각 배열요소에 원정이 성공했는지 실패했는지를 알려줌
+	expeditionResults: [-1, -1, -1, -1, -1],	// 원정 결과로 크기 5의 배열 각 배열요소에 원정이 성공했는지 실패했는지를 알려줌
 	rejectCountPosition: 0,	// 원정대 투표가 연속적으로 실패할때마다 증가시킴 5가되면 악이 승리
 	players: [],	// 플래이어 수의 크기를 가지는 배열(최대 인원수는 넘지 않음) ********* 세부 내용은 별도 자료 제공 *********
 	status: GS_WAITING,	// 게임의 상태 게임중인지 투표중인지 등등 필요한 게임 상태가 있을시 상수 만들기
@@ -112,7 +112,7 @@ function join(name, seat) {
 function setOwner() {
 	if(gamedata.players.length <= 0) return;
 	
-	gamedata.players[0].owner = true;
+	gamedata.owner = gamedata.players[0].seat;
 }
 
 // ------------------- 편의 함수 --------------------------
