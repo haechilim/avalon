@@ -9,14 +9,23 @@ var JOIN_NO_NAME = 1;
 var JOIN_NO_SEAT = 2;
 var JOIN_ALREADY_EXISTS = 3;
 
-// 게임 상태(Game Status)
-var GS_WAITING = 0;	// 게임 시작전
-var GS_CHECK_INFORMATION = 1;	// 멀린이나 악의 세력들이 정체를 확인하는 단계
-var GS_SET_UP_EXPEDITION = 2;	// 원정대장이 원정을 꾸리는 단계
-var GS_VOTE = 3;	// 원정에 대해 찬성하는지 반대하는지를 투표하는 투표단계
-var GS_EXPEDITIONARY = 4;	// 원정대를 성공시킬지 실패시킬지 플래이어들의 원정 단계
-var GS_ASSASSINATION = 5;	// 선의 세력이 원정을 3번 성공할시 어쌔신이 멀린을 암살하는 단계
-var GS_WINNER = 6;	// 게임 종료, 승자팀 발표 단계
+// 정체(identity)
+var GOOD1 = 0;	// 일반 시민(선)
+var GOOD2 = 1;
+var GOOD3 = 2;
+var GOOD4 = 3;
+var GOOD5 = 4;
+var GOOD_MERLIN = 5;	// 멀린(선)	모드레드를 제외한 악의 정체를 앎
+var GOOD_PERCIVAL = 6;	// 퍼시벌(선) 멀린이 누군지를 앎
+var EVIL1 = 7;	// 일반 악(임포스터ㅋㅋ)
+var EVIL2 = 8;
+var EVIL3 = 9;
+var EVIL_MORDRED = 10;	// 모드레드(악)	멀린에게 발각되지 않음
+var EVIL_ASSASSIN = 11;	// 어쌔신(악) 선이 승리할 경우 선을 암살할수 있음 멀린일 경우 악의 승
+var EVIL_MORCANA = 12;	// 모르가나(악) 퍼시벌이 멀린을 확인할때 멀린인척을 할수있음(퍼시벌은 멀린이 2명 보이고 추리해야뎀)
+var EVIL_OBERON = 13;	// 오베론(악) 악끼리 정체를 공유하지 않음(밸런스 조절용 트롤 캐ㅋㅋㅋ)
+var IDENTITY_UNKNOWN = 14;
+var IDENTITY_NOMAL = 15;
 
 var MAX_PLAYER = 10;
 var MIN_PLAYER = 5;
@@ -169,6 +178,7 @@ function showRejectCountMark(count, visible) {
 // -------------------- 이벤트 바인딩 -------------------------
 
 document.addEventListener("DOMContentLoaded", function() {
+    redrawPlayers();
     init();
     resize();
 	bindEvents();
@@ -192,6 +202,8 @@ function bindEvents() {
     });
 }
 
+// -------------------- 기타 -------------------------
+
 function resize() {
 	var DEFAULT_WIDTH = 1919;
 	var DEFAULT_HEIGHT = 1057;
@@ -204,4 +216,37 @@ function resize() {
 	document.body.style.transform = "scale(" + Math.min(ratioX, ratioY) + ")";
 	document.getElementById("container").style.transform = "translate(0px, " + (ratioY > 1 ? -offsetY : 0) + "px)";
 	window.scrollTo(0, offsetY);
+}
+
+// -------------------- redraw 함수 -------------------------
+
+function redrawPlayers() {
+    var html = '';
+    var profile;
+    var profileImg;
+    var name;
+
+    for(var i = 0; i < MAX_PLAYER; i++) {
+        name = "nickname";
+        profile = "questionMark";
+        profileImg = "questionMark";
+
+        if(gamedata) {
+            for(var playerIndex = 0; playerIndex < gamedata.players.length; playerIndex++) {
+                var player = gamedata.players[playerIndex];
+
+                if(player.seat == i) name = player.name;
+            }
+        }
+
+        html += 
+        '<div class="player seat' + i + '">' +
+            '<div class="identity opacity">' +
+                '<img class="' + profile + '" src="image/' + profileImg + '.png" alt="">' +
+            '</div>' +
+            '<div class="nickname">' + name + '</div>' +
+        '</div>';
+    }
+
+    document.querySelector(".playerContainer").innerHTML = html;
 }

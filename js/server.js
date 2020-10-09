@@ -26,14 +26,22 @@ var MAX_PLAYER = 10;
 var MIN_PLAYER = 5;
 
 // 정체(identity)
-var GOOD_NORMAL = 0;	// 일반 시민(선)
-var GOOD_MERLIN = 1;	// 멀린(선)	모드레드를 제외한 악의 정체를 앎
-var GOOD_PERCIVAL = 2;	// 퍼시벌(선) 멀린이 누군지를 앎
-var EVIL_NORMAL = 3;	// 일반 악(임포스터ㅋㅋ)
-var EVIL_MORDRED = 4;	// 모드레드(악)	멀린에게 발각되지 않음
-var EVIL_ASSASSIN = 5;	// 어쌔신(악) 선이 승리할 경우 선을 암살할수 있음 멀린일 경우 악의 승
-var EVIL_MORCANA = 6;	// 모르가나(악) 퍼시벌이 멀린을 확인할때 멀린인척을 할수있음(퍼시벌은 멀린이 2명 보이고 추리해야뎀)
-var EVIL_OBERON = 7;	// 오베론(악) 악끼리 정체를 공유하지 않음(밸런스 조절용 트롤 캐ㅋㅋㅋ)
+var GOOD1 = 0;	// 일반 시민(선)
+var GOOD2 = 1;
+var GOOD3 = 2;
+var GOOD4 = 3;
+var GOOD5 = 4;
+var GOOD_MERLIN = 5;	// 멀린(선)	모드레드를 제외한 악의 정체를 앎
+var GOOD_PERCIVAL = 6;	// 퍼시벌(선) 멀린이 누군지를 앎
+var EVIL1 = 7;	// 일반 악(임포스터ㅋㅋ)
+var EVIL2 = 8;
+var EVIL3 = 9;
+var EVIL_MORDRED = 10;	// 모드레드(악)	멀린에게 발각되지 않음
+var EVIL_ASSASSIN = 11;	// 어쌔신(악) 선이 승리할 경우 선을 암살할수 있음 멀린일 경우 악의 승
+var EVIL_MORCANA = 12;	// 모르가나(악) 퍼시벌이 멀린을 확인할때 멀린인척을 할수있음(퍼시벌은 멀린이 2명 보이고 추리해야뎀)
+var EVIL_OBERON = 13;	// 오베론(악) 악끼리 정체를 공유하지 않음(밸런스 조절용 트롤 캐ㅋㅋㅋ)
+var IDENTITY_UNKNOWN = 14;
+var IDENTITY_NOMAL = 15;
 
 // 원정 결과
 var EXPEDITION_SUCCESS = 0;
