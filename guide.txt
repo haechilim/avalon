@@ -1,11 +1,11 @@
 주고 받을 데이터 url
-/data <- 데이터 요청
-/join/name=플래이어 이름&seat=좌석 번호 <- 새로운 플래이어가 들어오는 상황
-/start/seat=좌석 번호 <- 게임시작을 누른 상황
-/choice/seat=좌석 번호 <- 원정대 배지를 준상황
-/approve/seat=좌석 번호 <- 좌석번호 사람이 투표 찬성한 상황
-/reject/seat=좌석 번호 <- 좌석번호 사람이 투표 반대한 상황
-/success/seat=좌석 번호 <- 좌석번호 사람이 원정 성공한 상황
-/fail/seat=좌석 번호 <- 좌석번호 사람이 원정 실패한 상황
-/assassination/seat=좌석 번호 <- 어쌔신이 선을 암살한 상황
+/gamedata?seat=좌석 번호 <- 데이터 요청
+/join?name=플래이어 이름&seat=좌석 번호 <- 새로운 플래이어가 들어오는 상황
+/start?seat=좌석 번호 <- 게임시작을 누른 상황
+/choice?seat=좌석 번호 <- 원정대 배지를 준상황
+/approve?seat=좌석 번호 <- 좌석번호 사람이 투표 찬성한 상황
+/reject?seat=좌석 번호 <- 좌석번호 사람이 투표 반대한 상황
+/success?seat=좌석 번호 <- 좌석번호 사람이 원정 성공한 상황
+/fail?seat=좌석 번호 <- 좌석번호 사람이 원정 실패한 상황
+/assassination?seat=좌석 번호 <- 어쌔신이 선을 암살한 상황
 추가 데이터 필요시 개발방에 공지

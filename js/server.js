@@ -57,33 +57,33 @@ var gamedata = {
 	players: [],	// 플래이어 수의 크기를 가지는 배열(최대 인원수는 넘지 않음) ********* 세부 내용은 별도 자료 제공 *********
 	status: GS_WAITING,	// 게임의 상태 게임중인지 투표중인지 등등 필요한 게임 상태가 있을시 상수 만들기
 	winners: -1,	// 이긴 팀을 표시
-	sequence: 1	// 데이터를 주기적으로 뿌리는데 데이터가 변경되어 클라이언트 쪽에 이를 알릴때 사용되는 변수 값만 증가시켜주면 된다...
+	sequence: 0	// 데이터를 주기적으로 뿌리는데 데이터가 변경되어 클라이언트 쪽에 이를 알릴때 사용되는 변수 값만 증가시켜주면 된다...
 };
 
 // ------------------- 게임 진행 주 로직 --------------------------
 
 function join(name, seat) {
 	var code = JOIN_SUCCESS;
-	var id = -1;
+	var _seat = -1;
 	
 	if(!name) code = JOIN_NO_NAME;
-	else if(!seat) code = JOIN_NO_SEAT;
+	else if(!seat || seat < 0 || seat >= MAX_PLAYER) code = JOIN_NO_SEAT;
 	else {
 		var player = getPlayerBySeat(seat);
 		
 		if(player) code = JOIN_ALREADY_EXISTS;
 		else {
-			player = newPlayer(name, seat);
+			newPlayer(name, seat);
 			setOwner();
 			gamedata.sequence++;
 		}
 		
-		id = player.id;
+		_seat = seat;
 	}
 	
 	return {
 		code: code,
-		id: id
+		seat: _seat
 	};
 
 	function newPlayer(name, seat) {
@@ -97,12 +97,14 @@ function join(name, seat) {
 
 		gamedata.players.push(player);
 	}
+}
 
-	function setOwner() {
-		if(gamedata.players.length <= 0) return;
-		
-		gamedata.players[0].owner = true;
-	}
+// ------------------- 플래이어 관련 함수 --------------------------
+
+function setOwner() {
+	if(gamedata.players.length <= 0) return;
+	
+	gamedata.players[0].owner = true;
 }
 
 // ------------------- 편의 함수 --------------------------
@@ -128,7 +130,7 @@ var server = http.createServer(function(request, response) {
 	var parameter = getUrlParameters(request.url);
 	
 	switch(urlPath) {
-		case "/data":
+		case "/gamedata":
 			jsonResponse(response, gamedata);
 			return;
 

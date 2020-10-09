@@ -6,7 +6,8 @@ var RC_NO_PERMISSION = 2;
 // 참가요청에 대한 응답코드
 var JOIN_SUCCESS = 0;
 var JOIN_NO_NAME = 1;
-var JOIN_ALREADY_EXISTS = 2;
+var JOIN_NO_SEAT = 2;
+var JOIN_ALREADY_EXISTS = 3;
 
 // 게임 상태(Game Status)
 var GS_WAITING = 0;	// 게임 시작전
@@ -44,11 +45,23 @@ var REJECT = 1;
 var GOOD = 0;
 var EVIL = 1;
 
+var DATA_REQUEST_INTERVAL = 1000;
+
 var gamedata;
+var sequece = 0;
+var mySeat;
 
-// -------------------- init 함수 -------------------------
+// -------------------- update 함수 -------------------------
 
+function updateTable() {
+    updatePlayer();
+}
 
+function updatePlayer() {
+    for(var i = 0; i < gamedata.players.length; i++) {
+        showSeat(gamedata.players[i].seat, true);
+    }
+}
 
 // -------------------- init 함수 -------------------------
 
@@ -56,6 +69,9 @@ function init() {
     resize();
     initBoard();
     requestJoin(function(json) {
+        console.log(json);
+		mySeat = json.seat;
+		if(json.code == JOIN_NO_NAME || json.code == JOIN_NO_SEAT) return;
 		requestGameData();
 		setInterval(requestGameData, DATA_REQUEST_INTERVAL);
 	});
@@ -71,10 +87,10 @@ function initBoard() {
 // -------------------- request -------------------------
 
 function requestGameData(callback) {
-	request("/gamedata?seat=" + mySeat, function(gamedata) {
-		if(sequece >= gamedata.sequece) return;
-		sequece = gamedata.sequece;
-		gamedata = gamedata;
+	request("/gamedata?seat=" + mySeat, function(data) {
+		if(sequece >= data.sequece) return;
+		sequece = data.sequece;
+		gamedata = data;
 		updateTable();
 
 		if(callback) callback();
@@ -123,6 +139,8 @@ function writePlayerNumber(good, evil) {
 }
 
 function showSeat(seat, visible) {
+    if(seat < 0 || seat >= MAX_PLAYER) return;
+    
     document.querySelector(".seat" + seat).style.display = visible ? "flex" : "none";
 }
 
