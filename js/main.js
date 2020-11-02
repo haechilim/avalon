@@ -9,23 +9,14 @@ var JOIN_NO_NAME = 1;
 var JOIN_NO_SEAT = 2;
 var JOIN_ALREADY_EXISTS = 3;
 
-// 정체(identity)
-var GOOD1 = 0;	// 일반 시민(선)
-var GOOD2 = 1;
-var GOOD3 = 2;
-var GOOD4 = 3;
-var GOOD5 = 4;
-var GOOD_MERLIN = 5;	// 멀린(선)	모드레드를 제외한 악의 정체를 앎
-var GOOD_PERCIVAL = 6;	// 퍼시벌(선) 멀린이 누군지를 앎
-var EVIL1 = 7;	// 일반 악(임포스터ㅋㅋ)
-var EVIL2 = 8;
-var EVIL3 = 9;
-var EVIL_MORDRED = 10;	// 모드레드(악)	멀린에게 발각되지 않음
-var EVIL_ASSASSIN = 11;	// 어쌔신(악) 선이 승리할 경우 선을 암살할수 있음 멀린일 경우 악의 승
-var EVIL_MORCANA = 12;	// 모르가나(악) 퍼시벌이 멀린을 확인할때 멀린인척을 할수있음(퍼시벌은 멀린이 2명 보이고 추리해야뎀)
-var EVIL_OBERON = 13;	// 오베론(악) 악끼리 정체를 공유하지 않음(밸런스 조절용 트롤 캐ㅋㅋㅋ)
-var IDENTITY_UNKNOWN = 14;
-var IDENTITY_NOMAL = 15;
+// 게임 상태(Game Status)
+var GS_WAITING = 0;
+var GS_CHECK_INFORMATION = 1;
+var GS_SET_UP_EXPEDITION = 2;
+var GS_VOTE = 3;
+var GS_EXPEDITIONARY = 4;
+var GS_ASSASSINATION = 5;
+var GS_WINNER = 6;
 
 var MAX_PLAYER = 10;
 var MIN_PLAYER = 5;
@@ -33,14 +24,22 @@ var MAX_ROUND = 5;
 var MAX_VOTE = 5;
 
 // 정체(identity)
-var GOOD_NORMAL = 0;	// 일반 시민(선)
-var GOOD_MERLIN = 1;	// 멀린(선)	모드레드를 제외한 악의 정체를 앎
-var GOOD_PERCIVAL = 2;	// 퍼시벌(선) 멀린이 누군지를 앎
-var EVIL_NORMAL = 3;	// 일반 악(임포스터ㅋㅋ)
-var EVIL_MORDRED = 4;	// 모드레드(악)	멀린에게 발각되지 않음
-var EVIL_ASSASSIN = 5;	// 어쌔신(악) 선이 승리할 경우 선을 암살할수 있음 멀린일 경우 악의 승
-var EVIL_MORCANA = 6;	// 모르가나(악) 퍼시벌이 멀린을 확인할때 멀린인척을 할수있음(퍼시벌은 멀린이 2명 보이고 추리해야뎀)
-var EVIL_OBERON = 7;	// 오베론(악) 악끼리 정체를 공유하지 않음(밸런스 조절용 트롤 캐ㅋㅋㅋ)
+var GOOD1 = 0;
+var GOOD2 = 1;
+var GOOD3 = 2;
+var GOOD4 = 3;
+var GOOD5 = 4;
+var GOOD_MERLIN = 5;
+var GOOD_PERCIVAL = 6;
+var EVIL1 = 7;
+var EVIL2 = 8;
+var EVIL3 = 9;
+var EVIL_MORDRED = 10;
+var EVIL_ASSASSIN = 11;
+var EVIL_MORCANA = 12;
+var EVIL_OBERON = 13;
+var IDENTITY_UNKNOWN = 14;
+var IDENTITY_NOMAL = 15;
 
 // 원정 결과
 var EXPEDITION_SUCCESS = 0;
@@ -94,132 +93,12 @@ function init() {
     }
 }
 
-// -------------------- request 함수 -------------------------
-
-function requestGameData(callback) {
-	request("/gamedata?seat=" + mySeat, function(data) {
-		if(sequence >= data.sequence) return;
-		sequence = data.sequence;
-        gamedata = data;
-        console.log(gamedata, sequence);
-		updateTable();
-
-		if(callback) callback();
-	});
-}
-
-function requestJoin(callback) {
-	request("/join" + location.search, callback);
-}
-
-function request(url, callback) {
-	var xhr = new XMLHttpRequest();
-		
-	xhr.addEventListener("load", function() {
-		var json = JSON.parse(xhr.responseText);
-		if(callback) callback(json);
-	});
-	
-	xhr.open("GET", url, true);
-	xhr.send();
-}
-
-// -------------------- 화면 변환 함수 -------------------------
-
-function showSeatAll(visible) {
-    for(var i = 0; i < MAX_PLAYER; i++) {
-       showSeat(i, visible);
-    }
-}
-
-function expeditionNomalAll() {
-    for(var i = 1; i <= MAX_ROUND; i++) {
-        expeditionNomal(i);
-    }
-}
-
-function showRejectCountMarkAll(visible) {
-    for(var i = 1; i <= MAX_VOTE; i++) {
-        showRejectCountMark(i, visible);
-    }
-}
-
-function showSeat(seat, visible) {
-    if(seat < 0 || seat >= MAX_PLAYER) return;
-    
-    document.querySelector(".seat" + seat).style.display = visible ? "flex" : "none";
-}
-
-function expeditionNomal(round) {
-    document.querySelector(".quest" + round).classList.remove("expeditionSuccess");
-    document.querySelector(".quest" + round).classList.remove("expeditionFail");
-}
-
-function expeditionSuccess(round) {
-    document.querySelector(".quest" + round).classList.add("expeditionSuccess");
-    document.querySelector(".quest" + round).classList.remove("expeditionFail");
-}
-
-function expeditionFail(round) {
-    document.querySelector(".quest" + round).classList.remove("expeditionSuccess");
-    document.querySelector(".quest" + round).classList.add("expeditionFail");
-}
-
-function showRejectCountMark(count, visible) {
-    var element = document.querySelector(".rejectCount" + count);
-
-    if(visible) element.classList.add("rejectCountMark");
-    else element.classList.remove("rejectCountMark");
-}
-
-// -------------------- 이벤트 바인딩 -------------------------
-
-document.addEventListener("DOMContentLoaded", function() {
-    redraw();
-    init();
-    resize();
-	bindEvents();
-});
-
-function bindEvents() {
-    window.addEventListener('resize', function() {
-        resize();
-    });
-
-    document.addEventListener("contextmenu", function(event) {
-        event.preventDefault();
-    });
-
-    document.addEventListener("selectstart", function(event) {
-        event.preventDefault();
-    });
-
-    document.addEventListener("dragstart", function(event) {
-        event.preventDefault();
-    });
-}
-
-// -------------------- 기타 -------------------------
-
-function resize() {
-	var DEFAULT_WIDTH = 1919;
-	var DEFAULT_HEIGHT = 1057;
-	
-	var ratioX = window.innerWidth / DEFAULT_WIDTH;
-	var ratioY = window.innerHeight / DEFAULT_HEIGHT;
-	var offsetX = (DEFAULT_WIDTH - window.innerWidth) / 2;
-	var offsetY = (DEFAULT_HEIGHT - window.innerHeight) / 2;
-	
-	document.body.style.transform = "scale(" + Math.min(ratioX, ratioY) + ")";
-	document.getElementById("container").style.transform = "translate(0px, " + (ratioY > 1 ? -offsetY : 0) + "px)";
-	window.scrollTo(0, offsetY);
-}
-
 // -------------------- redraw 함수 -------------------------
 
 function redraw() {
     redrawPlayers();
     redrawBoard();
+    redrawButton();
 }
 
 function redrawPlayers() {
@@ -344,4 +223,162 @@ function redrawBoard() {
 
         document.querySelector(".container").style.backgroundImage = "url('image/" + playerCount + "pSheet.jpg')";
     }
+}
+
+function redrawButton() {
+    if(!gamedata) return;
+
+    showStartButton(gamedata.owner == mySeat && gamedata.status == GS_WAITING && gamedata.players.length >= MIN_PLAYER);
+    showSettingButton(gamedata.owner == mySeat && gamedata.status == GS_WAITING);
+}
+
+// -------------------- request 함수 -------------------------
+
+function requestGameData(callback) {
+	request("/gamedata?seat=" + mySeat, function(data) {
+		if(sequence >= data.sequence) return;
+		sequence = data.sequence;
+        gamedata = data;
+        console.log(gamedata, sequence);
+		updateTable();
+
+		if(callback) callback();
+	});
+}
+
+function requestJoin(callback) {
+	request("/join" + location.search, callback);
+}
+
+function requestStart(callback) {
+	request("/start" + location.search, callback);
+}
+
+function request(url, callback) {
+	var xhr = new XMLHttpRequest();
+		
+	xhr.addEventListener("load", function() {
+		var json = JSON.parse(xhr.responseText);
+		if(callback) callback(json);
+	});
+	
+	xhr.open("GET", url, true);
+	xhr.send();
+}
+
+// -------------------- 화면 변환 함수 -------------------------
+
+function showSeatAll(visible) {
+    for(var i = 0; i < MAX_PLAYER; i++) {
+       showSeat(i, visible);
+    }
+}
+
+function expeditionNomalAll() {
+    for(var i = 1; i <= MAX_ROUND; i++) {
+        expeditionNomal(i);
+    }
+}
+
+function showRejectCountMarkAll(visible) {
+    for(var i = 1; i <= MAX_VOTE; i++) {
+        showRejectCountMark(i, visible);
+    }
+}
+
+function showSeat(seat, visible) {
+    if(seat < 0 || seat >= MAX_PLAYER) return;
+    
+    document.querySelector(".seat" + seat).style.display = visible ? "flex" : "none";
+}
+
+function expeditionNomal(round) {
+    document.querySelector(".quest" + round).classList.remove("expeditionSuccess");
+    document.querySelector(".quest" + round).classList.remove("expeditionFail");
+}
+
+function expeditionSuccess(round) {
+    document.querySelector(".quest" + round).classList.add("expeditionSuccess");
+    document.querySelector(".quest" + round).classList.remove("expeditionFail");
+}
+
+function expeditionFail(round) {
+    document.querySelector(".quest" + round).classList.remove("expeditionSuccess");
+    document.querySelector(".quest" + round).classList.add("expeditionFail");
+}
+
+function showRejectCountMark(count, visible) {
+    var element = document.querySelector(".rejectCount" + count);
+
+    if(visible) element.classList.add("rejectCountMark");
+    else element.classList.remove("rejectCountMark");
+}
+
+function showStartButton(visible) {
+    document.querySelector(".startButton").style.display = visible ? "flex" : "none";
+}
+
+function showSettingButton(visible) {
+    document.querySelector(".settingButton").style.display = visible ? "flex" : "none";
+}
+
+function showPopup(visible) {
+    document.querySelector(".popup").style.display = visible ? "flex" : "none";
+}
+
+// -------------------- 이벤트 바인딩 -------------------------
+
+document.addEventListener("DOMContentLoaded", function() {
+    redraw();
+    init();
+    resize();
+	bindEvents();
+});
+
+function bindEvents() {
+    window.addEventListener("resize", function() {
+        resize();
+    });
+
+    document.querySelector(".startButton").addEventListener("click", function() {
+       requestStart(function(json) {
+           
+       });
+    });
+
+    document.querySelector(".settingButton").addEventListener("click", function() {
+        showPopup(true);
+    });
+
+    document.querySelector(".closeButton").addEventListener("click", function() {
+        showPopup(false);
+    });
+
+    document.addEventListener("contextmenu", function(event) {
+        event.preventDefault();
+    });
+
+    document.addEventListener("selectstart", function(event) {
+        event.preventDefault();
+    });
+
+    document.addEventListener("dragstart", function(event) {
+        event.preventDefault();
+    });
+}
+
+// -------------------- 기타 -------------------------
+
+function resize() {
+	var DEFAULT_WIDTH = 1919;
+	var DEFAULT_HEIGHT = 1057;
+	
+	var ratioX = window.innerWidth / DEFAULT_WIDTH;
+	var ratioY = window.innerHeight / DEFAULT_HEIGHT;
+	var offsetX = (DEFAULT_WIDTH - window.innerWidth) / 2;
+	var offsetY = (DEFAULT_HEIGHT - window.innerHeight) / 2;
+	
+	document.body.style.transform = "scale(" + Math.min(ratioX, ratioY) + ")";
+	document.getElementById("container").style.transform = "translate(0px, " + (ratioY > 1 ? -offsetY : 0) + "px)";
+	window.scrollTo(0, offsetY);
 }
