@@ -38,9 +38,39 @@ body {
 .settingContainer {
 	width: 70%;
 	height: 70%;
-	background-image: url('../image/settingBackGroundImage.jpg');
+    background-image: url('../image/settingBackGroundImage.jpg');
+    background-repeat: no-repeat;
+	background-size: 100%;
+    background-position: 50% 50%;
 	background-color: rgba(60, 48, 21, 1);
 	border-radius: 30px;
+}
+
+.identityContainer {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    margin-top: 30px;
+}
+
+.identityText {
+    color: #ffffff;
+    font-size: 20px;
+    text-align: center;
+}
+
+.goodContainer {
+    width: 100%;
+    display: flex;
+    flex-direction: row;
+    justify-content: space-around;
+}
+
+.evilContainer {
+    width: 100%;
+    display: flex;
+    flex-direction: row;
+    justify-content: space-around;
 }
 
 .playerContainer {
@@ -69,12 +99,12 @@ body {
     border: 2px solid #E0EBFF;
     border-radius: 50%;
     background-color: #828282;
-    opacity: 0.5;
+    opacity: initial;
     margin: 10px;
 }
 
 .opacity {
-    opacity: initial;
+    opacity: 0.5;
 }
 
 .identity .identityMark {
