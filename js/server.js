@@ -192,7 +192,7 @@ var server = http.createServer(function(request, response) {
 });
 
 server.listen(8888);
-console.log("서버 on");
+console.log("server start");
 
 // ----------------------------------------
 
