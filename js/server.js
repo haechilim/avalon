@@ -1,251 +1,253 @@
-var http = require("http");
-var fs = require("fs");
-var mime = require("mime");
+const http = require("http");
+const fs = require("fs");
+const mime = require("mime");
 
-// 응답코드 (Response Code)
-var RC_SUCCESS = 0;
-var RC_NOT_YOUR_TURN = 1;
-var RC_NO_PERMISSION = 2;
+class Server {
+	// 응답코드 (Response Code)
+	RC_SUCCESS = 0;
+	RC_NOT_YOUR_TURN = 1;
+	RC_NO_PERMISSION = 2;
 
-// 참가요청에 대한 응답코드
-var JOIN_SUCCESS = 0;
-var JOIN_NO_NAME = 1;
-var JOIN_NO_SEAT = 2;
-var JOIN_ALREADY_EXISTS = 3;
+	// 참가요청에 대한 응답코드
+	JOIN_SUCCESS = 0;
+	JOIN_NO_NAME = 1;
+	JOIN_NO_SEAT = 2;
+	JOIN_ALREADY_EXISTS = 3;
 
-// 게임 상태(Game Status)
-var GS_WAITING = 0;
-var GS_CHECK_INFORMATION = 1;
-var GS_SET_UP_EXPEDITION = 2;
-var GS_VOTE = 3;
-var GS_EXPEDITIONARY = 4;
-var GS_ASSASSINATION = 5;
-var GS_WINNER = 6;
+	// 게임 상태(Game Status)
+	GS_WAITING = 0;
+	GS_CHECK_INFORMATION = 1;
+	GS_SET_UP_EXPEDITION = 2;
+	GS_VOTE = 3;
+	GS_EXPEDITIONARY = 4;
+	GS_ASSASSINATION = 5;
+	GS_WINNER = 6;
 
-var MAX_PLAYER = 10;
-var MIN_PLAYER = 5;
+	MAX_PLAYER = 10;
+	MIN_PLAYER = 5;
 
-// 정체(identity)
-var GOOD1 = 0;
-var GOOD2 = 1;
-var GOOD3 = 2;
-var GOOD4 = 3;
-var GOOD5 = 4;
-var GOOD_MERLIN = 5;
-var GOOD_PERCIVAL = 6;
-var EVIL1 = 7;
-var EVIL2 = 8;
-var EVIL3 = 9;
-var EVIL_MORDRED = 10;
-var EVIL_ASSASSIN = 11;
-var EVIL_MORCANA = 12;
-var EVIL_OBERON = 13;
-var IDENTITY_UNKNOWN = 14;
-var IDENTITY_NOMAL = 15;
+	// 정체(identity)
+	GOOD1 = 0;
+	GOOD2 = 1;
+	GOOD3 = 2;
+	GOOD4 = 3;
+	GOOD5 = 4;
+	GOOD_MERLIN = 5;
+	GOOD_PERCIVAL = 6;
+	EVIL1 = 7;
+	EVIL2 = 8;
+	EVIL3 = 9;
+	EVIL_MORDRED = 10;
+	EVIL_ASSASSIN = 11;
+	EVIL_MORCANA = 12;
+	EVIL_OBERON = 13;
+	IDENTITY_UNKNOWN = 14;
+	IDENTITY_NOMAL = 15;
 
-//플래이어 상태
-var PARTICIPANT = 0;
-var OBSERVER = 1;
+	//플래이어 상태
+	PARTICIPANT = 0;
+	OBSERVER = 1;
 
-// 원정 결과
-var EXPEDITION_SUCCESS = 0;
-var EXPEDITION_FAIL = 1;
+	// 원정 결과
+	EXPEDITION_SUCCESS = 0;
+	EXPEDITION_FAIL = 1;
 
-// 투표 결과
-var APPROVE = 0;
-var REJECT = 1;
+	// 투표 결과
+	APPROVE = 0;
+	REJECT = 1;
 
-//선, 악
-var GOOD = 0;
-var EVIL = 1;
+	//선, 악
+	GOOD = 0;
+	EVIL = 1;
 
-var gamedata = {
-	owner: -1,
-	leader: -1,
-	leftBadge: -1,
-	voteResult: -1,
-	expeditionResults: [-1, -1, -1, -1, -1],
-	rejectCountPosition: 0,
-	players: [],
-	status: GS_WAITING,
-	winners: -1,
-	sequence: 0
-};
-
-// ------------------- 게임 진행 주 로직 --------------------------
-
-function join(name, seat) {
-	var code = JOIN_SUCCESS;
-	var _seat = -1;
+	gamedata = {
+		owner: -1,
+		leader: -1,
+		leftBadge: -1,
+		voteResult: -1,
+		expeditionResults: [-1, -1, -1, -1, -1],
+		rejectCountPosition: 0,
+		players: [],
+		status: this.GS_WAITING,
+		winners: -1,
+		sequence: 0
+	};
 	
-	if(!name) code = JOIN_NO_NAME;
-	else if(!seat || seat < 0 || seat >= MAX_PLAYER) code = JOIN_NO_SEAT;
-	else {
-		var player = getPlayerBySeat(seat);
+	constructor() {}
+
+	createServer() {
+		http.createServer((request, response) => {
+			const url = request.url;
+
+			console.log("요청 URL: ", url);
+			
+			const urlPath = this.getUrlPath(url);
+			const filepath = this.getFilePath(urlPath);
+			const contentType = mime.getType(filepath);
+			const parameter = this.getUrlParameters(url);
+			const isText = this.isText(contentType);
+			
+			switch(urlPath) {
+				case "/gamedata":
+					this.jsonResponse(response, this.gamedata);
+					return;
 		
-		if(player) code = JOIN_ALREADY_EXISTS;
-		else {
-			newPlayer(name, seat);
-			setOwner();
-			gamedata.sequence++;
-		}
+				case "/join":
+					this.jsonResponse(response, this.join(parameter.name, parameter.seat));
+					return;
 		
-		_seat = seat;
+				case "/start":
+					this.jsonResponse(response, this.start(parameter.seat));
+					return;
+			}
+				
+			isText ? fs.readFile(filepath, "utf-8", content) : fs.readFile(filepath, content);
+			
+			function content(error, data) {
+				if(error) {
+					response.writeHead(404, {
+						"content-type": "text/plain; charset=utf-8"
+					});
+						
+					response.end("File Not Found");
+				}
+				else {
+					response.writeHead(200, {
+						"content-type": contentType + (isText ? "; charset=utf-8" : ""),
+						"cache-control": isText ? "no-cache" : "max-age=31536000"
+					});
+						
+					response.end(data);
+				}
+			}
+		}).listen(8888);
+		console.log("server start");
+	}
+
+	jsonResponse(response, data) {
+		response.writeHead(200, {
+			"content-type": "application/json; charset=utf-8",
+			"cache-control": "no-cache"
+		});
+			
+		response.end(JSON.stringify(data));
 	}
 	
-	return {
-		code: code,
-		seat: _seat
-	};
+	// ----------------------------------------
+	
+	getUrlPath(url) {
+		const index = url.indexOf("?");
 
-	function newPlayer(name, seat) {
-		player = {
+		return index < 0 ? url : url.substr(0, index);
+	}
+	
+	getUrlParameters(url) {
+		let result = {};
+		let parameters = parameterPart().split("&");
+		
+		for(let i = 0; i < parameters.length; i++) {
+			let tokens = parameters[i].split("=");
+			
+			if(tokens.length < 2) continue;
+			
+			result[tokens[0]] = tokens[1];
+		}
+		
+		return result;
+		
+		function parameterPart() {
+			const tokens = url.split("?");
+
+			return tokens.length > 1 ? tokens[1] : "";
+		}
+	}
+	
+	getFilePath(urlPath) {
+		if(urlPath == "/") return "avalon.html";
+		
+		return urlPath.substr(1, urlPath.length - 1);
+	}
+	
+	// ----------------------------------------
+	
+	isBinary(type) {
+		return !(type.startsWith("text") || type == "application/javascript");
+	}
+	
+	isText(contentType) {
+		return contentType == "text/html" || contentType == "text/css" || contentType == "application/javascript";
+	}
+
+	// ------------------- 게임 진행 주 로직 --------------------------
+
+	join(name, seat) {
+		let code = this.JOIN_SUCCESS;
+		let _seat = -1;
+		
+		if(!name) code = this.JOIN_NO_NAME;
+		else if(!seat || seat < 0 || seat >= this.MAX_PLAYER) code = this.JOIN_NO_SEAT;
+		else {
+			let player = this.getPlayerBySeat(seat);
+			
+			if(player) code = this.JOIN_ALREADY_EXISTS;
+			else {
+				this.newPlayer(name, seat);
+				this.setOwner();
+				this.gamedata.sequence++;
+			}
+			
+			_seat = seat;
+		}
+		
+		return {
+			code: code,
+			seat: _seat
+		};
+	}
+
+	newPlayer(name, seat) {
+		const player = {
 			name: name,
 			seat: seat,
 			identity: -1,
 			vote: -1,
 			expedition: -1,
-			status: gamedata.status == GS_WAITING ? PARTICIPANT : OBSERVER
+			status: this.gamedata.status == this.GS_WAITING ? this.PARTICIPANT : this.OBSERVER
 		};
 
-		gamedata.players.push(player);
-	}
-}
-
-function start(seat) {
-	var code;
-
-	if(gamedata.owner != seat) code = RC_NO_PERMISSION;
-	else {
-		gamedata.status = GS_CHECK_INFORMATION;
+		this.gamedata.players.push(player);
 	}
 
-	return {
-		code: code,
-	};
-}
+	start(seat) {
+		let code;
 
-// ------------------- 플래이어 관련 함수 --------------------------
+		if(this.gamedata.owner != seat) code = RC_NO_PERMISSION;
+		else this.gamedata.status = this.GS_CHECK_INFORMATION;
 
-function setOwner() {
-	if(gamedata.players.length <= 0) return;
-	
-	gamedata.owner = gamedata.players[0].seat;
-}
-
-// ------------------- 편의 함수 --------------------------
-
-function getPlayerBySeat(seat) {
-	for(var i = 0; i < gamedata.players.length; i++) {
-		var player = gamedata.players[i];
-
-		if(player.seat == seat) return player;
+		return {
+			code: code,
+		};
 	}
 
-	return null;
-}
+	// ------------------- 플래이어 관련 함수 --------------------------
 
-// ------------------- 전송 요청 처리 --------------------------
-
-var server = http.createServer(function(request, response) {
-	console.log("요청 URL: ", request.url);
-	
-	var urlPath = getUrlPath(request.url);
-	var filepath = getFilePath(urlPath);
-	var contentType = mime.getType(filepath);
-	var parameter = getUrlParameters(request.url);
-	
-	switch(urlPath) {
-		case "/gamedata":
-			jsonResponse(response, gamedata);
-			return;
-
-		case "/join":
-			jsonResponse(response, join(parameter.name, parameter.seat));
-			return;
-
-		case "/start":
-			jsonResponse(response, start(parameter.seat));
-			return;
-	}
+	setOwner() {
+		if(this.gamedata.players.length <= 0) return;
 		
-	if(isText(contentType))	fs.readFile(filepath, "utf-8", content);
-	else fs.readFile(filepath, content);
-	
-	function content(error, data) {
-		if(error) {
-			response.writeHead(404, {
-				"content-type": "text/plain; charset=utf-8"
-			});
-				
-			response.end("File Not Found");
+		this.gamedata.owner = this.gamedata.players[0].seat;
+	}
+
+	// ------------------- 편의 함수 --------------------------
+
+	getPlayerBySeat(seat) {
+		for(let i = 0; i < this.gamedata.players.length; i++) {
+			const player = this.gamedata.players[i];
+
+			if(player.seat == seat) return player;
 		}
-		else {
-			response.writeHead(200, {
-				"content-type": contentType + (isText(contentType) ? "; charset=utf-8" : ""),
-				"cache-control": isText(contentType) ? "no-cache" : "max-age=31536000"
-			});
-				
-			response.end(data);
-		}
-	}
-});
 
-server.listen(8888);
-console.log("server start");
-
-// ----------------------------------------
-
-function jsonResponse(response, data) {
-	response.writeHead(200, {
-		"content-type": "application/json; charset=utf-8",
-		"cache-control": "no-cache"
-	});
-		
-	response.end(JSON.stringify(data));
-}
-
-// ----------------------------------------
-
-function getUrlPath(url) {
-	var index = url.indexOf("?");
-	return index < 0 ? url : url.substr(0, index);
-}
-
-function getUrlParameters(url) {
-	var result = {};
-	var part = parameterPart();
-	var parameters = part.split("&");
-	
-	for(var i = 0; i < parameters.length; i++) {
-		var tokens = parameters[i].split("=");
-		
-		if(tokens.length < 2) continue;
-		
-		result[tokens[0]] = tokens[1];
-	}
-	
-	return result;
-	
-	
-function parameterPart() {
-		var tokens = url.split("?");
-		return tokens.length > 1 ? tokens[1] : "";
+		return null;
 	}
 }
 
-function getFilePath(urlPath) {
-	if(urlPath == "/") return "avalon.html";
-	
-	return urlPath.substr(1, urlPath.length - 1);
-}
-
-// ----------------------------------------
-
-function isBinary(type) {
-	return !(type.startsWith("text") || type == "application/javascript");
-}
-
-function isText(contentType) {
-	return contentType == "text/html" || contentType == "text/css" || contentType == "application/javascript";
-}
+module.exports = Server;
