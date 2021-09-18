@@ -1,6 +1,6 @@
 @font-face { 
-    font-family: 'HeirofLightBold'; 
-    src: url('https://cdn.jsdelivr.net/gh/projectnoonnu/noonfonts_20-07@1.0/HeirofLightBold.woff') format('woff'); font-weight: normal; font-style: normal; 
+    font-family: 'HeirofLightBold';
+    src: url('../font/HeirofLightBold.woff');
 }
 
 body {
@@ -18,7 +18,7 @@ body {
 	width: 1919px;
 	height: 1057px;
 	background-repeat: no-repeat;
-	background-size: 100%;
+	background-size: cover;
     background-position: 0% 0%;
     margin: 0px;
 	position: relative;
@@ -362,21 +362,21 @@ body {
 	position: absolute;
     left: 1500px;
 	top: 950px;
-	padding-left: 38px;
+	padding-left: 43px;
 }
 
 .settingButton {
 	position: absolute;
     left: 1700px;
 	top: 950px;
-	padding-left: 28px;
+	padding-left: 47px;
 }
 
 .closeButton {
 	position: absolute;
     left: 1400px;
 	top: 800px;
-	padding-left: 35px;
+	padding-left: 45px;
 }
 
 .drop-shadow {
