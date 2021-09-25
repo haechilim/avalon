@@ -3,8 +3,10 @@ class NetworkUtil {
 
     // 응답코드 (Response Code)
     static RC_SUCCESS = 0;
-    static RC_NOT_YOUR_TURN = 1;
-    static RC_NO_PERMISSION = 2;
+	static RC_NOT_YOUR_TURN = 1;
+	static RC_NO_PERMISSION = 2;
+	static RC_NO_MERLIN = 3;
+	static RC_NO_ASSASSIN = 4;
 
     // 참가요청에 대한 응답코드
     static JOIN_SUCCESS = 0;
@@ -27,20 +29,20 @@ class NetworkUtil {
     static MAX_VOTE = 5;
 
     // 정체(identity)
-    static GOOD1 = 0;
-    static GOOD2 = 1;
-    static GOOD3 = 2;
-    static GOOD4 = 3;
-    static GOOD5 = 4;
-    static GOOD_MERLIN = 5;
-    static GOOD_PERCIVAL = 6;
-    static EVIL1 = 7;
-    static EVIL2 = 8;
-    static EVIL3 = 9;
-    static EVIL_MORDRED = 10;
-    static EVIL_ASSASSIN = 11;
-    static EVIL_MORCANA = 12;
-    static EVIL_OBERON = 13;
+    static GOOD_MERLIN = 0;
+    static GOOD_PERCIVAL = 1;
+    static GOOD1 = 2;
+    static GOOD2 = 3;
+    static GOOD3 = 4;
+    static GOOD4 = 5;
+    static GOOD5 = 6;
+    static EVIL_MORDRED = 7;
+    static EVIL_ASSASSIN = 8;
+    static EVIL_MORCANA = 9;
+    static EVIL_OBERON = 10;
+    static EVIL1 = 11;
+    static EVIL2 = 12;
+    static EVIL3 = 13;
     static IDENTITY_UNKNOWN = 14;
     static IDENTITY_NOMAL = 15;
 

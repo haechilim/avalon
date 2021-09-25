@@ -217,6 +217,13 @@ class DrawManager {
     static showPopup(visible) {
         document.querySelector(".popup").style.display = visible ? "flex" : "none";
     }
+
+    static redrawSelectIdentity(element, id, selected) {
+        const color = id <= 6 ? "#00ff00" : "#ff0000";
+
+        element.querySelector(".identity").style.borderColor = selected ? "#ffffff" : color;
+        element.querySelector(".identityText").style.color = selected ? "#ffffff" : color;
+    }
 }
 
 export default DrawManager;

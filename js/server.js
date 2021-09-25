@@ -7,6 +7,8 @@ class Server {
 	RC_SUCCESS = 0;
 	RC_NOT_YOUR_TURN = 1;
 	RC_NO_PERMISSION = 2;
+	RC_NO_MERLIN = 3;
+	RC_NO_ASSASSIN = 4;
 
 	// 참가요청에 대한 응답코드
 	JOIN_SUCCESS = 0;
@@ -27,20 +29,20 @@ class Server {
 	MIN_PLAYER = 5;
 
 	// 정체(identity)
-	GOOD1 = 0;
-	GOOD2 = 1;
-	GOOD3 = 2;
-	GOOD4 = 3;
-	GOOD5 = 4;
-	GOOD_MERLIN = 5;
-	GOOD_PERCIVAL = 6;
-	EVIL1 = 7;
-	EVIL2 = 8;
-	EVIL3 = 9;
-	EVIL_MORDRED = 10;
-	EVIL_ASSASSIN = 11;
-	EVIL_MORCANA = 12;
-	EVIL_OBERON = 13;
+	GOOD_MERLIN = 0;
+    GOOD_PERCIVAL = 1;
+    GOOD1 = 2;
+    GOOD2 = 3;
+    GOOD3 = 4;
+    GOOD4 = 5;
+    GOOD5 = 6;
+    EVIL_MORDRED = 7;
+    EVIL_ASSASSIN = 8;
+    EVIL_MORCANA = 9;
+    EVIL_OBERON = 10;
+    EVIL1 = 11;
+    EVIL2 = 12;
+    EVIL3 = 13;
 	IDENTITY_UNKNOWN = 14;
 	IDENTITY_NOMAL = 15;
 
@@ -97,7 +99,7 @@ class Server {
 					return;
 		
 				case "/start":
-					this.jsonResponse(response, this.start(parameter.seat));
+					this.jsonResponse(response, this.start(parameter.seat, parameter.selectedIdentity));
 					return;
 			}
 				
@@ -116,7 +118,7 @@ class Server {
 						"content-type": contentType + (isText ? "; charset=utf-8" : ""),
 						"cache-control": isText ? "no-cache" : "max-age=31536000"
 					});
-						
+			   			
 					response.end(data);
 				}
 			}
@@ -218,10 +220,24 @@ class Server {
 		this.gamedata.players.push(player);
 	}
 
-	start(seat) {
-		let code;
+	start(seat, selectedIdentity) {
+		let code = this.RC_SUCCESS;
+		let selected = decodeURIComponent(selectedIdentity).split(" ");
+		let goodCount = 0;
+		let evilCount = 0;
 
-		if(this.gamedata.owner != seat) code = RC_NO_PERMISSION;
+		for(let i = 0; i < selected.length; i++) {
+			selected[i] = parseInt(selected[i]);
+
+			if(selected[i] >= this.GOOD_MERLIN && selected[i] <= this.GOOD5) goodCount++;
+			else if(selected[i] >= this.EVIL_MORDRED && selected[i] <= this.EVIL3); evilCount++;
+		}
+
+		console.log(selected);
+
+		if(this.gamedata.owner != seat) code = this.RC_NO_PERMISSION;
+		else if(!selected.includes(this.GOOD_MERLIN)) code = this.RC_NO_MERLIN;
+		else if(!selected.includes(this.EVIL_ASSASSIN)) code = this.RC_NO_ASSASSIN;
 		else this.gamedata.status = this.GS_CHECK_INFORMATION;
 
 		return {
