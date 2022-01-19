@@ -1,6 +1,7 @@
 const http = require("http");
 const fs = require("fs");
 const mime = require("mime");
+const io = require('socket.io');
 
 class Server {
 	// 응답코드 (Response Code)
@@ -78,7 +79,7 @@ class Server {
 	constructor() {}
 
 	createServer() {
-		http.createServer((request, response) => {
+		const server = http.createServer((request, response) => {
 			const url = request.url;
 
 			console.log("요청 URL: ", url);
@@ -86,10 +87,9 @@ class Server {
 			const urlPath = this.getUrlPath(url);
 			const filepath = this.getFilePath(urlPath);
 			const contentType = mime.getType(filepath);
-			const parameter = this.getUrlParameters(url);
 			const isText = this.isText(contentType);
 			
-			switch(urlPath) {
+			/* switch(urlPath) {
 				case "/gamedata":
 					this.jsonResponse(response, this.gamedata);
 					return;
@@ -101,7 +101,7 @@ class Server {
 				case "/start":
 					this.jsonResponse(response, this.start(parameter.seat, parameter.selectedIdentity));
 					return;
-			}
+			} */
 				
 			isText ? fs.readFile(filepath, "utf-8", content) : fs.readFile(filepath, content);
 			
@@ -122,8 +122,21 @@ class Server {
 					response.end(data);
 				}
 			}
-		}).listen(8888);
-		console.log("server start");
+		});
+
+		const io = require('socket.io')(server);
+
+		io.on('connection', (socket) => {
+			console.log(socket.client.id);
+
+			socket.on("join", (nickname, seat) => {
+				this.jsonResponse(response, this.join(nickname, seat));
+			})
+
+			io.emit("gamedata", this.gamedata);
+		});
+
+		server.listen(8888, console.log("server start"));
 	}
 
 	jsonResponse(response, data) {

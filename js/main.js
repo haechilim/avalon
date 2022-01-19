@@ -1,7 +1,6 @@
 import Util from "./util/util.js";
 import NetworkManager from "./manager/networkManager.js";
 import DrawManager from "./manager/DrawManager.js";
-import { scrypt } from "crypto";
 
 class Main {
     constructor() {
@@ -17,6 +16,19 @@ class Main {
         Util.resize();
         DrawManager.initBoard(this.gamedata);
         DrawManager.redraw();
+
+        const socketClient = io();
+
+        const nickname = "임준형";
+        const seat = 3;
+
+        socketClient.emit("join", nickname, seat);
+
+        socketClient.on("gamedata", gamedata => {
+            this.gamedata = gamedata;
+
+            console.log(this.gamedata);
+        })
 
         this.requestJoin(() => {
             this.requestGameData(this.mySeat, () => DrawManager.updateTable(this.gamedata, this.mySeat));

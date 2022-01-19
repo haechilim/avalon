@@ -1,0 +1,27 @@
+{
+  "name": "avalon",
+  "version": "1.0.0",
+  "main": "index.js",
+  "dependencies": {
+    "mime": "^2.4.6",
+    "socket.io": "^4.4.0",
+    "socket.io-client": "^4.4.0",
+    "soket.io": "^0.0.1-security"
+  },
+  "devDependencies": {},
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/haechilim/avalon.git"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/haechilim/avalon/issues"
+  },
+  "homepage": "https://github.com/haechilim/avalon#readme",
+  "description": ""
+}
